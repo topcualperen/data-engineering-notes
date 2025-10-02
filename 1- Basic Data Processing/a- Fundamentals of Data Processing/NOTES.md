@@ -1,6 +1,6 @@
 # Fundementals of Data Processing
 
-## contents
+## Contents
 - #### Introduction to NumPy and Pandas
 
 ## Introduction to NumPy and Pandas
