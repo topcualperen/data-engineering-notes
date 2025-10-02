@@ -19,20 +19,20 @@ It is ideal for processing data in tables (as SQL tables)
 ## NumPy Arrays vs Java Arrays
 
 ### Java Arrays Example
-'''java
+```java
 int[] numbers = {1,2,3,4,5,6,7};
 for (int i = 0; i < numbers.length; i++) {
     numbers[i] = numbers[i] * 2;
 }
-'''
+```
 
 ### NumPy Arrays Example
-'''python
+```python
 import numpy as np
 numbers = np.array([1,2,3,4,5,6,7])
 (vectorization)
 numbers = numbers * 2
-'''
+```
 
 ### Key Differences
 
