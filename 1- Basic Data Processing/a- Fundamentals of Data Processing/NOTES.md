@@ -135,3 +135,59 @@ merged = pd.merge(orders, customers, on='user_id')
 ---
 
 ## CSV/JSON Reading/Writing
+
+One of the most commonly used operations as a Data Engineer is writing/reading files. You will do these operations always in your data pipeline.
+
+### CSV Operations
+
+#### CSV Reading
+```python
+# Basic reading
+df = pd.read_csv('users.csv')
+
+# Data engineer için önemli parametreler # Important parameters for a Data engineer
+df = pd.read_csv('users.csv',
+                 sep=',',              # Delimiter character
+                 encoding='utf-8',     # Turkish character support
+                 na_values=['NULL', 'N/A'],  # Values to be interpreted as null
+                 parse_dates=['created_at'], # Automatically parse date columns
+                 dtype={'user_id': int},     # Specify data types
+                 usecols=['user_id', 'name'] # Read only specific columns   (memory optimization)
+                )
+```
+
+#### CSV Writing
+```python
+df.to_csv('output.csv', 
+          index=False,        # Dont write the index column
+          encoding='utf-8')
+```
+
+### JSON Operations
+
+JSON is widely used when retrieving data from APIs or working with NoSQL databases
+
+#### JSON Reading
+```python
+# Basic JSON
+df = pd.read_json('users.json')
+
+# Nested JSON - Data from APIs usually comes in this format
+import json
+with open('nested_data.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)
+    
+# Converting JSON to DataFrame
+df = pd.json_normalize(data, 
+                       record_path='orders',  # Nested array
+                       meta=['user_id', 'name'])  # Meta data
+```
+
+#### JSON Writing
+```python
+# From DataFrame to JSON
+df.to_json('output.json', 
+           orient='records',  # [{}, {}, {}] In the format
+           force_ascii=False, # For Turkish character 
+           indent=2)          # Readable format
+```
