@@ -1,14 +1,14 @@
 # SQL Fundamentals
 
 ## Table of Contents
-- [SQL Core Concepts]
-- [Relational Model and Normalization]
-- [Basic SQL Commands]
-  - [SELECT]
-  - [WHERE]
-  - [JOIN]
-  - [GROUP BY]
-- [Window Functions]
+- **SQL Core Concepts**
+- **Relational Model and Normalization**
+- **Basic SQL Commands**
+  - **SELECT**
+  - **WHERE**
+  - **JOIN**
+  - **GROUP BY**
+- **Window Functions**
 
 ---
 
@@ -84,3 +84,52 @@ user_id | name   | phone
 1       | Ali    | 555-1234
 1       | Ali    | 555-5678
 ```
+
+**2NF (Second Normal Form)**
+
+Must satisfy 1NF + Every column must be fully dependent on the primary key.
+
+**❌ Bad Design:**
+```
+order_id | product_id | product_name | quantity
+1        | 101        | Laptop       | 2
+```
+(product_name depends on product_id, not order_id)
+**✅ Good Design:**
+```
+-- Orders table
+order_id | product_id | quantity
+
+-- Products table
+product_id | product_name
+```
+
+**3NF (Third Normal Form)**
+
+Must satisfy 2NF + No transitive dependencies (non-key columns shouldn't depend on other non-key columns).
+
+**❌ Bad Design:**
+```
+order_id | customer_id | customer_city | customer_country
+```
+(customer_country, customer_city'ye bağlı / customer_country depends on customer_city)
+
+**✅ Good Design:**
+```
+-- Orders
+order_id | customer_id
+
+-- Customers
+customer_id | city_id
+
+-- Cities
+city_id | city_name | country
+```
+
+#### Normalization for Data Engineers
+
+- **OLTP (Transactional) systems**: High normalization (3NF+) - Data consistency priority
+- **OLAP (Analytics) systems**: Low normalization (Denormalized) - Query performance priority
+- **Data Warehouse**: Uses Star/Snowflake schema (partially denormalized)
+
+---
