@@ -1,8 +1,8 @@
 # SQL Fundamentals
 
 ## Table of Contents
-- [SQL Core Concepts](#sql-core-concepts)
-- [Relational Model and Normalization](#relational-model-and-normalization)
+- [SQL Core Concepts]
+- [Relational Model and Normalization]
 - [Basic SQL Commands](#basic-sql-commands)
   - [SELECT](#select)
   - [WHERE](#where)
