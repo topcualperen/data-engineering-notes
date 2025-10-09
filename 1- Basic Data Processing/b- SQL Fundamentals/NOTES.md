@@ -2,7 +2,7 @@
 
 ## Table of Contents
 - [SQL Core Concepts](#sql-core-concepts)
-- [Relational Model ve Normalization](#relational-model-ve-normalization)
+- [Relational Model and Normalization](#relational-model-and-normalization)
 - [Basic SQL Commands](#basic-sql-commands)
   - [SELECT](#select)
   - [WHERE](#where)
