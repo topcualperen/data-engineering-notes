@@ -3,12 +3,12 @@
 ## Table of Contents
 - [SQL Core Concepts]
 - [Relational Model and Normalization]
-- [Basic SQL Commands](#basic-sql-commands)
-  - [SELECT](#select)
-  - [WHERE](#where)
-  - [JOIN](#join)
-  - [GROUP BY](#group-by)
-- [Window Functions](#window-functions)
+- [Basic SQL Commands]
+  - [SELECT]
+  - [WHERE]
+  - [JOIN]
+  - [GROUP BY]
+- [Window Functions]
 
 ---
 
