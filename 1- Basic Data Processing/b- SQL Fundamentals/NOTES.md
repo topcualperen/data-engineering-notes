@@ -133,3 +133,41 @@ city_id | city_name | country
 - **Data Warehouse**: Uses Star/Snowflake schema (partially denormalized)
 
 ---
+
+## Basic SQL Commands
+
+### SELECT
+
+Used to retrieve data from a database.
+
+```sql
+-- Basic selection
+SELECT name, email FROM users;
+
+-- All columns
+SELECT * FROM users;
+
+-- Distinct values
+SELECT DISTINCT city FROM users;
+
+-- Column alias
+SELECT 
+    name AS user_name,
+    email AS contact_email
+FROM users;
+
+-- Calculations
+SELECT 
+    product_name,
+    price,
+    price * 1.18 AS price_with_tax
+FROM products;
+
+-- Limit (first N rows)
+SELECT * FROM users LIMIT 10;
+
+-- ORDER BY (sorting)
+SELECT name, age 
+FROM users 
+ORDER BY age DESC;  -- DESC: Descending, ASC: Ascending
+```
