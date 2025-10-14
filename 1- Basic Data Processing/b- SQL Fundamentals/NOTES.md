@@ -615,3 +615,135 @@ FROM orders;
 ```
 
 ---
+
+## Best Practices and Tips
+
+### Performance
+
+1. **Use indexes**: On columns used in JOIN and WHERE conditions
+2. **Avoid SELECT ***: Select only needed columns
+3. **WHERE first, JOIN later**: Filter first, then join
+4. **EXPLAIN PLAN**: To understand how your query executes
+5. **Partitioning**: Date-based partitioning for large tables
+6. **Materialized Views**: For frequently used complex queries
+
+### Code Quality
+
+```sql
+-- ❌ Bad
+select * from users u, orders o where u.user_id=o.user_id and u.city='Istanbul'
+
+-- ✅ Good
+SELECT 
+    u.user_id,
+    u.name,
+    o.order_id,
+    o.total_amount
+FROM users u
+INNER JOIN orders o ON u.user_id = o.user_id
+WHERE u.city = 'Istanbul';
+```
+
+- Use CTEs (Common Table Expressions) instead of subqueries
+- Use meaningful alias names
+- Format and indent your code
+- Break down and comment complex queries
+
+### CTE Example
+
+```sql
+-- ❌ Complex subquery
+SELECT 
+    u.name,
+    (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.user_id) AS order_count
+FROM users u
+WHERE (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.user_id) > 5;
+
+-- ✅ Clean CTE
+WITH user_orders AS (
+    SELECT 
+        user_id,
+        COUNT(*) AS order_count
+    FROM orders
+    GROUP BY user_id
+)
+SELECT 
+    u.name,
+    uo.order_count
+FROM users u
+INNER JOIN user_orders uo ON u.user_id = uo.user_id
+WHERE uo.order_count > 5;
+```
+
+---
+
+## Summary
+
+As a data engineer, SQL is one of the tools you'll use most frequently. What you've learned in this document:
+
+1. **Relational Model**: Tables, PK/FK, relationships
+2. **Normalization**: Reducing data redundancy (1NF, 2NF, 3NF)
+3. **SELECT**: Data retrieval, filtering, sorting
+4. **JOIN**: Combining tables (INNER, LEFT, RIGHT, FULL)
+5. **GROUP BY**: Data grouping and aggregate functions
+6. **Window Functions**: Advanced analytical calculations
+
+**Next steps:**
+- Subqueries and CTEs
+- Indexes and query optimization
+- Transactions and ACID
+- Stored procedures and functions
+- Query execution plans
+
+---
+
+## Practice Exercises
+
+### Exercise 1
+
+Find the user with the highest order total in each city.
+
+<details>
+<summary>Solution</summary>
+
+```sql
+WITH user_totals AS (
+    SELECT 
+        u.user_id,
+        u.name,
+        u.city,
+        SUM(o.total_amount) AS total_spent,
+        RANK() OVER (PARTITION BY u.city ORDER BY SUM(o.total_amount) DESC) AS city_rank
+    FROM users u
+    INNER JOIN orders o ON u.user_id = o.user_id
+    GROUP BY u.user_id, u.name, u.city
+)
+SELECT 
+    city,
+    name,
+    total_spent
+FROM user_totals
+WHERE city_rank = 1;
+```
+</details>
+
+### Exercise 2
+
+Calculate the month-over-month change in order count.
+
+<details>
+<summary>Solution</summary>
+
+```sql
+WITH monthly_orders AS (
+    SELECT 
+        DATE_TRUNC('month', order_date) AS month,
+        COUNT(*) AS order_count
+    FROM orders
+    GROUP BY DATE_TRUNC('month', order_date)
+)
+SELECT 
+    month,
+    order_count,
+    LAG(order_count) OVER (ORDER BY month) AS previous_month_count,
+    order_count - LAG(order_count) OVER (ORDER BY month) AS change
