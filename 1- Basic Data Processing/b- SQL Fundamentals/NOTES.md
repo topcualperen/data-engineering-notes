@@ -415,3 +415,203 @@ ORDER BY total_spent DESC;
 **Note:** `COALESCE` converts NULL values to 0
 
 ---
+
+## Window Functions
+
+Window functions perform calculations across row groups but don't collapse rows like GROUP BY. They produce a result for each row. A very powerful tool for data engineers.
+
+### Basic Syntax
+
+```sql
+function_name() OVER (
+    [PARTITION BY column]
+    [ORDER BY column]
+    [ROWS/RANGE clause]
+)
+```
+
+### Ranking Functions
+
+#### ROW_NUMBER()
+
+Assigns a unique sequential number to each row.
+
+```sql
+-- Rank users by age
+SELECT 
+    name,
+    age,
+    ROW_NUMBER() OVER (ORDER BY age DESC) AS age_rank
+FROM users;
+
+-- Rank users within each city
+SELECT 
+    name,
+    city,
+    age,
+    ROW_NUMBER() OVER (PARTITION BY city ORDER BY age DESC) AS rank_in_city
+FROM users;
+```
+
+#### RANK() ve DENSE_RANK()
+
+- `RANK()`: Assigns same rank to equal values, skips next rank
+- `DENSE_RANK()`: Assigns same rank to equal values, doesn't skip next rank
+
+```sql
+SELECT 
+    product_name,
+    sales_amount,
+    RANK() OVER (ORDER BY sales_amount DESC) AS rank,
+    DENSE_RANK() OVER (ORDER BY sales_amount DESC) AS dense_rank
+FROM product_sales;
+
+-- Example output:
+-- product_name | sales_amount | rank | dense_rank
+-- Product A    | 1000        | 1    | 1
+-- Product B    | 1000        | 1    | 1
+-- Product C    | 800         | 3    | 2  (RANK skips, DENSE_RANK doesn't skip)
+```
+
+#### NTILE()
+
+Divides rows into N equal groups (e.g., quartiles, deciles).
+
+```sql
+-- Divide users into 4 groups by age (quartiles)
+SELECT 
+    name,
+    age,
+    NTILE(4) OVER (ORDER BY age) AS age_quartile
+FROM users;
+```
+
+### Aggregate Window Functions
+
+Aggregate functions can be used as window functions.
+
+```sql
+-- Calculate total and individual percentage for each row
+SELECT 
+    product_name,
+    sales_amount,
+    SUM(sales_amount) OVER () AS total_sales,
+    ROUND(sales_amount * 100.0 / SUM(sales_amount) OVER (), 2) AS percentage
+FROM product_sales;
+
+-- Cumulative sum
+SELECT 
+    order_date,
+    total_amount,
+    SUM(total_amount) OVER (ORDER BY order_date) AS running_total
+FROM orders;
+
+-- Moving average - Last 7 days
+SELECT 
+    order_date,
+    total_amount,
+    AVG(total_amount) OVER (
+        ORDER BY order_date 
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) AS moving_avg_7days
+FROM daily_sales;
+```
+
+### LAG() ve LEAD()
+
+- `LAG()`: Returns the value from the previous row
+- `LEAD()`: Returns the value from the next row
+
+```sql
+-- Compare with previous order
+SELECT 
+    order_date,
+    total_amount,
+    LAG(total_amount, 1) OVER (ORDER BY order_date) AS previous_amount,
+    total_amount - LAG(total_amount, 1) OVER (ORDER BY order_date) AS difference
+FROM orders;
+
+-- Days between orders per user
+SELECT 
+    user_id,
+    order_date,
+    LAG(order_date, 1) OVER (PARTITION BY user_id ORDER BY order_date) AS previous_order_date,
+    order_date - LAG(order_date, 1) OVER (PARTITION BY user_id ORDER BY order_date) AS days_since_last_order
+FROM orders;
+```
+
+### FIRST_VALUE() and LAST_VALUE()
+
+```sql
+-- Each user's first and last order
+SELECT 
+    user_id,
+    order_date,
+    total_amount,
+    FIRST_VALUE(order_date) OVER (
+        PARTITION BY user_id 
+        ORDER BY order_date
+    ) AS first_order_date,
+    LAST_VALUE(order_date) OVER (
+        PARTITION BY user_id 
+        ORDER BY order_date
+        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+    ) AS last_order_date
+FROM orders;
+```
+
+### Use Cases for Data Engineers
+
+#### 1. Top N in each group
+
+```sql
+-- Top 3 selling products in each category
+WITH ranked_products AS (
+    SELECT 
+        category,
+        product_name,
+        total_sales,
+        ROW_NUMBER() OVER (PARTITION BY category ORDER BY total_sales DESC) AS rank
+    FROM product_sales
+)
+SELECT *
+FROM ranked_products
+WHERE rank <= 3;
+```
+
+#### 2. Change analysis
+
+```sql
+-- Monthly growth rate
+SELECT 
+    month,
+    revenue,
+    LAG(revenue) OVER (ORDER BY month) AS previous_month,
+    ROUND(
+        (revenue - LAG(revenue) OVER (ORDER BY month)) * 100.0 / 
+        LAG(revenue) OVER (ORDER BY month), 
+        2
+    ) AS growth_rate_percent
+FROM monthly_revenue;
+```
+
+#### 3. Cumulative metrics
+
+```sql
+-- Cumulative spending per user
+SELECT 
+    user_id,
+    order_date,
+    total_amount,
+    SUM(total_amount) OVER (
+        PARTITION BY user_id 
+        ORDER BY order_date
+    ) AS cumulative_spending,
+    COUNT(*) OVER (
+        PARTITION BY user_id 
+        ORDER BY order_date
+    ) AS order_number
+FROM orders;
+```
+
+---
