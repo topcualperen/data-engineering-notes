@@ -203,6 +203,10 @@ SELECT * FROM users
 WHERE email LIKE '%@gmail.com';  -- % = any characters
                                  -- _ = single character
 
+SELECT * FROM users WHERE name LIKE 'Al%';  -- Users whose names start with "Al"
+SELECT * FROM users WHERE phone LIKE '555%';  -- Users whose phone number start with 555 
+SELECT * FROM users WHERE user_code LIKE '____'; -- 4-letter user codes
+
 -- NULL check
 SELECT * FROM users WHERE phone IS NULL;
 SELECT * FROM users WHERE phone IS NOT NULL;
