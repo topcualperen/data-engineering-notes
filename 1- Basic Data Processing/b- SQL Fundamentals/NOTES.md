@@ -6,6 +6,8 @@
 - **Basic SQL Commands**
   - **SELECT**
   - **WHERE**
+  - **Textual Functions**
+  - **Conditions**
   - **JOIN**
   - **GROUP BY**
 - **Window Functions**
@@ -210,6 +212,65 @@ SELECT * FROM users WHERE user_code LIKE '____'; -- 4-letter user codes
 -- NULL check
 SELECT * FROM users WHERE phone IS NULL;
 SELECT * FROM users WHERE phone IS NOT NULL;
+```
+
+### Textual Functions
+
+#### Concat and ||
+
+```sql
+select (first_name, ' ', last_name) as full_name
+from users
+```
+
+```sql
+select first_name || ' ' || last_name as full_name
+from users
+```
+
+##### Replace
+
+```sql
+select 
+first_name || ' ' || last_name as full_name,
+replace(email, '@abc.com', '@xyz.com') as new_mail
+from users
+```
+
+### Conditions
+
+#### Case when expression
+
+```sql
+select
+    concat(first_name, ' ', last_name) as full_name,
+    case
+        when salary < 1000 then 'Low Salary'
+        when salary >= 1000 and salary < 3000 then 'High Salary'
+        else 'Other'
+    end as salary_segment
+from users
+```
+
+#### Coalesce
+
+If value1 is not NULL -> return it
+If value1 is NULL -> check value2
+If value2 is NULL -> check value3
+If all are NULL -> the result is NULL
+
+```sql
+select
+    first_name || ' ' || last_name as full_name,
+    coalesce(value1, value2, value3, ...)
+from users
+```
+
+#### NULLIF
+
+```sql
+select nullif(5,5); -- result: NULL
+select nullif(5,3); -- result: 5
 ```
 
 ### JOIN
