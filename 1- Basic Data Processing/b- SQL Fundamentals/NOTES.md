@@ -8,6 +8,7 @@
   - **WHERE**
   - **Textual Functions**
   - **Conditions**
+  - **AGGREGATE FUNCTION**
   - **JOIN**
   - **GROUP BY**
 - **Window Functions**
@@ -272,6 +273,20 @@ from users
 select nullif(5,5); -- result: NULL
 select nullif(5,3); -- result: 5
 ```
+
+### AGGREGATE FUNCTION
+
+#### COUNT
+We count the lines
+```sql
+select count(*)     -- includes all lines -> *
+from users
+
+select count(phone_number)  -- If the data is empty, it does not count
+from users
+```
+
+Note: 
 
 ### JOIN
 
