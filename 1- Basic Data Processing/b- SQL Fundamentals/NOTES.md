@@ -220,7 +220,7 @@ SELECT * FROM users WHERE phone IS NOT NULL;
 #### Concat and ||
 
 ```sql
-select (first_name, ' ', last_name) as full_name
+select concat(first_name, ' ', last_name) as full_name
 from users
 ```
 
