@@ -533,6 +533,25 @@ SELECT
 FROM users;
 ```
 
+-- Assigning a sequence number to each order in customers' order history
+SELECT 
+    musteri_id,
+    siparis_tarihi,
+    tutar,
+    ROW_NUMBER() OVER (
+        PARTITION BY musteri_id 
+        ORDER BY siparis_tarihi
+    ) AS siparis_sirasi
+FROM siparisler;
+
+musteri_id | siparis_tarihi | tutar | siparis_sirasi
+-----------|----------------|-------|----------------
+101        | 2024-01-05     | 150   | 1  (first order)
+101        | 2024-02-12     | 200   | 2  (second order)
+101        | 2024-03-20     | 180   | 3  (third order)
+102        | 2024-01-15     | 300   | 1  (this customer's first order)
+
+
 #### RANK() ve DENSE_RANK()
 
 - `RANK()`: Assigns same rank to equal values, skips next rank
