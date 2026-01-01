@@ -533,6 +533,7 @@ SELECT
 FROM users;
 ```
 
+```sql
 -- Assigning a sequence number to each order in customers' order history
 SELECT 
     musteri_id,
@@ -543,6 +544,7 @@ SELECT
         ORDER BY siparis_tarihi
     ) AS siparis_sirasi
 FROM siparisler;
+```
 
 musteri_id | siparis_tarihi | tutar | siparis_sirasi
 -----------|----------------|-------|----------------
